@@ -1,0 +1,563 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جدول المهام</title>
+    <style>
+        body { 
+            background: #1a1a1a; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            color: white; 
+            margin: 0; 
+            padding: 20px; 
+        }
+				
+
+	*:focus{
+		outline: none !important;
+	}
+        /* تنسيق الجدول الزجاجي */
+        .glass-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+                                
+        }
+            th:hover{
+                       background:rgba(0, 170, 255, 0.548);
+                        cursor: default;
+
+            }             
+    
+
+        th { 
+            background: rgba(55, 179, 241, 0.2); 
+            padding: 20px; 
+            font-size: 30px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-style: italic;
+            font-weight: bold;
+            
+        }
+
+        td { 
+            padding: 15px; 
+            text-align: center; 
+            height: 50px;
+            font-size: 25px;
+            color: rgb(255, 255, 255);
+            outline: none;
+           font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+           font-style: oblique;
+           word-spacing: 5px;
+        }
+
+        /* تأثير الـ Hover */
+        td:hover  {
+            background: rgba(255, 255, 255, 0.493);
+            transition: 0.3s;
+            cursor: cell;
+           
+        }
+
+        /* تجاوب الموبايل */
+        @media screen and (max-width: 600px) {
+            .glass-table { font-size: 14px; }
+            th, td { padding: 10px; }
+        }
+        .sasa{font-size:20px }
+        .sa{font-size:20px}
+
+
+
+
+        .sasa:hover{
+            
+            
+            background-image: linear-gradient(to top ,black);
+            font-size:30px;
+            color: white; 
+               
+        
+        
+        }
+        .sa:hover{
+            color: rgb(0, 0, 0);
+            background-image: linear-gradient(to top ,rgb(255, 255, 255));
+            font-size:30px
+           
+        }
+
+/* تنسيق الزر العائم */
+.notes-floating-btn {
+        position: fixed;
+            bottom: 20px;
+                right: 20px; /* يمكنك تغييرها إلى left لو تحبها على اليسار */
+                    width: 60px;
+                        height: 60px;
+                            background-color: #007bff;
+                                color: white;
+                                    border: none;
+                                        border-radius: 50%;
+                                               font-size: 24px;
+    cursor: pointer;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+                transition: transform 0.2s ease;
+                }
+
+                .notes-floating-btn:hover {
+    transform: scale(1.1);
+    }
+    /* تنسيق النافذة الخلفية المبهمة */
+    .notes-modal {
+        display: none; /* مخفية في البداية */
+            position: fixed;
+                top: 0;
+                    left: 0;
+                        width: 100%;
+                            height: 100%;
+                                background-color: rgba(0, 0, 0, 0.5);
+                                    z-index: 1001;
+                                        justify-content: center;
+                                            align-items: center;
+    }
+    /* صندوق الملاحظات */
+    .notes-content {
+            background-color: white;
+                padding: 20px;
+                    border-radius: 10px;
+                                                                                        width: 320px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        position: relative;
+            direction: rtl; /* لجعل الكتابة من اليمين لليسار */
+            }
+            /* زر الإغلاق (X) */
+            .close-btn {
+                    position: absolute;
+                        top: 10px;
+                            left: 15px;
+                                font-size: 24px;
+                                    cursor: pointer;
+                                        color: #aaa;
+            }
+            .close-btn:hover {
+                    color: black;
+            }
+            /* مساحة الكتابة */
+            #notes-textarea {
+                    width: 100%;
+                        height: 150px;
+                            margin-top: 15px;
+                                padding: 10px;
+                                    border: 1px solid #ccc;
+                                        border-radius: 5px;
+                                            resize: none;
+                                                box-sizing: border-box;
+                                                    font-family: sans-serif;
+            }
+
+             /* زر الحفظ */
+             #save-notes-btn {
+                     width: 100%;
+                         background-color: #28a745;
+                             color: white;
+                                 border: none;
+                                     padding: 10px;
+                                         margin-top: 10px;
+                                             border-radius: 5px;
+                                                 cursor: pointer;
+                                                     font-size: 16px;
+             }
+             #save-notes-btn:hover {
+                     background-color: #218838;
+             }
+                                                           
+/* تنسيق قائمة المهام الطائرة */
+.floating-todo {
+        position: fixed;
+            top: 50px;
+                left: 50px; /* مكانها الابتدائي على الشاشة */
+                    width: 350px;
+                        background:hsl(200, 100%, 85%);
+                            border-radius: 12px;
+                                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+                                    z-index: 9999; /* عشان تفضل طايرة فوق الجدول وكل العناصر */
+                                    overflow: hidden;
+                                        border: 1px solid #e2e8f0;
+                                        }
+                                        
+                                        /* الشريط العلوي الخاص بالسحب */
+                                        .todo-header {
+                                            background-color: #4a90e2;
+                                                color: white;
+                                                    padding: 12px 15px;
+                                                        cursor: move; /* يغير شكل الماوس لعلامة التحريك */
+                                                          display: flex;
+         justify-content: space-between;
+               align-items: center;
+                   font-weight: bold;
+                       user-select: none;
+                       }
+                       
+                       .drag-icon {
+                           font-size: 18px;
+                               opacity: 0.8;
+                        }
+                 
+                 /* محتوى القائمة الداخلي */
+                 .todo-body {
+                        padding: 15px;
+                        }
+                        
+                        /* صندوق الإدخال والزر داخل القائمة الطائرة */
+                        .todo-input-box {
+                            display: flex;
+                                gap: 8px;
+                                                                                                margin-bottom: 15px;
+                                                                                                }
+                                                                                                
+                                                                                                #todo-input {
+                                                                                                    flex: 1;
+          padding: 10px;
+              border: 2px solid #e2e8f0;
+                  border-radius: 6px;
+                      font-size: 14px;
+                          outline: none;
+                          }
+                          
+                          #todo-input:focus {
+                              border-color: #4a90e2;
+                              }
+                              
+                              #add-todo-btn {
+                                  background-color: #2b6cb0;
+                                      color: white;
+                                          border: none;
+                                              padding: 0 15px;
+                                                  border-radius: 6px;
+                                                      cursor: pointer;
+                                                          font-weight: bold;
+                                                          }
+                                                          
+                                                          /* قائمة الـ Li والتاسكات */
+                                                          #todo-list {
+                                                              list-style: none;
+                                                                  padding: 0;
+                                                                      margin: 0;
+                                                                          max-height: 1000px; /* حد أقصى لطول القائمة ويظهر سكرول لو زادت */
+                                                                              overflow:auto;
+                                                                              
+                                                                              }
+                                                                              
+                                                                              #todo-list li {
+                                                                                                                                                                                background: #f7fafc;
+                                                                                                                                                                                    padding: 10px 12px;
+                                                                                                                                                                                        border-radius: 6px;
+                                                                                                                                                                                            margin-bottom: 8px;
+                                                                                                                                                                                                display: flex;
+                                                                                                                                                                                                    justify-content: space-between;
+                                                                                                                                                                                                        align-items: center;
+                                                                                                                                                                                                            cursor: pointer;
+                                                                                                         border-right: 4px solid #4a90e2;
+       transition: all 0.2s;
+           user-select: none;
+           color:#2d3748;
+           font-size: 30px;
+           }
+           
+           #todo-list li.completed {
+               text-decoration: line-through;
+                   color: #000000;
+                       background: rgba(255, 0, 0, 0.671);
+                           border-right-color: #cbd5e0;
+                           }
+                           
+                           .delete-btn {
+                               background: none;
+                                   border: none;
+                                       color: #e53e3e;
+                                           font-weight: bold;
+                                               cursor: pointer;
+                                                   display: none;
+                                                   }
+                                                   
+                                                   #todo-list li:hover .delete-btn {
+                                                       display: inline;
+                                                       }
+    </style>
+</head>
+<body>
+
+    <div style="margin-bottom: 20px; text-align: center; width: 100%;">
+    <button class="sasa" onclick="addRow()" style="background-color: rgb(21, 255, 0); padding:10px;cursor: pointer;">إضافة صف +</button>
+    <button class="sa" onclick="deleteRow()" style="background-color: rgb(255, 0, 0); padding: 10px;cursor:pointer ;">حذف آخر صف -</button>
+</div>
+<button title="ادخل ملاحظاتك هنا" id="notes-btn" class="notes-floating-btn">م</button>
+
+<div id="notes-modal" class="notes-modal">
+        <div class="notes-content">
+                    <span class="close-btn">&times;</span>
+                            <h3>الملاحظات الشخصية</h3>
+                                    <textarea id="notes-textarea" placeholder="اكتب ملاحظاتك هنا..."></textarea>
+                                            <button id="save-notes-btn">حفظ الملاحظة</button>
+        </div>
+    </div>
+<div id="draggable-todo" class="floating-todo">
+        <div id="todo-header" class="todo-header">
+                    <span>تاسكات النهاردة</span>
+                            <span class="drag-icon">⋮⋮</span>
+                                </div>
+                                    
+                                        <div class="todo-body">
+                                                <div class="todo-input-box">
+                                                                <input type="text" id="todo-input" placeholder="اكتب تاسك جديد...">
+                                                                            <button id="add-todo-btn">إضافة</button>
+                                                </div>
+
+                                                        <ul id="todo-list">
+                                                        </ul>
+                                                    </div>
+                                                    </div>
+
+<table border class="glass-table" id="myTable">
+    <thead>
+        <tr>
+            <th>السبت</th>
+            <th>الأحد</th>
+            <th>الأثنين</th>
+            <th>الثلاثاء</th>
+            <th>الأربعاء</th>
+            <th>الخميس</th>
+            <th>الجمعة</th>
+        </tr>
+    </thead>
+    <tbody title="اضف بياناتك" id="tableBody" contenteditable>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    </tbody>
+</table>
+
+ <script>
+    const tableBody = document.getElementById('tableBody');
+
+    // حفظ البيانات عند أي تغيير
+    if (tableBody) {
+        tableBody.addEventListener('input', () => {
+            localStorage.setItem('savedTableData', tableBody.innerHTML);
+        });
+    }
+
+    // استرجاع البيانات عند فتح الصفحة
+    window.onload = () => {
+        const saved = localStorage.getItem('savedTableData');
+         if (saved) {
+           tableBody.innerHTML = saved;
+        }
+     };
+</script>
+<script>
+
+
+
+// حفظ تلقائي للجدول عند الكتابة
+if (tableBody) {ventListener('input', saveTable);
+}
+    tableBody.addE
+
+</script>
+
+
+
+<script>
+
+// --- سكريبت الجدول المظبوط ---
+
+// 1. دالة الحفظ (الأساس اللي بيسجل أي تغيير)
+function saveTable() {
+    const tableBody = document.getElementById('tableBody');
+    if (tableBody) {
+        localStorage.setItem('studyData_Saleh', tableBody.innerHTML);
+    }
+}
+
+// 2. دالة الإضافة (بتضيف وبتحفظ فوراً)
+function addRow() {
+    const tableBody = document.getElementById('tableBody');
+    const newRow = `<tr>${'<td>  </td>'.repeat(7)}</tr>`;
+    tableBody.innerHTML += newRow;
+    saveTable(); // السطر ده هو اللي كان ناقص عشان يحفظ الصف الجديد
+}
+
+// 3. دالة الحذف (بتمسح وبتحفظ فوراً)
+function deleteRow() {
+    const tableBody = document.getElementById('tableBody');
+    if (tableBody && tableBody.rows.length > 0) {
+        tableBody.deleteRow(-1);
+        saveTable(); // السطر ده هو اللي كان ناقص عشان يحفظ الحذف
+    }
+}
+
+// 4. تحميل الجدول عند فتح الصفحة (باستخدام addEventListener عشان ميضربش التايمر)
+window.addEventListener('load', () => {
+    const tableBody = document.getElementById('tableBody');
+    const savedTable = localStorage.getItem('studyData_Saleh');
+    if (savedTable && tableBody) {
+        tableBody.innerHTML = savedTable;
+    }
+});
+
+// 5. حفظ الكلام اللي بتكتبه جوه الجدول (تلقائياً وأنت بتكتب)
+document.addEventListener('input', (e) => {
+    if (e.target.closest('#tableBody')) {
+        saveTable();
+    }
+});
+
+</script>
+<script>const notesBtn = document.getElementById('notes-btn');
+    const notesModal = document.getElementById('notes-modal');
+    const closeBtn = document.querySelector('.close-btn');
+    const notesTextarea = document.getElementById('notes-textarea');
+    const saveNotesBtn = document.getElementById('save-notes-btn');
+
+    // فتح النافذة عند الضغط على الزر الدائري
+    notesBtn.addEventListener('click', () => {
+            notesModal.style.display = 'flex';
+                // تحميل الملاحظة المحفوظة سابقاً إن وجدت
+                    const savedNotes = localStorage.getItem('userNotes');
+                        if (savedNotes) {
+                                    notesTextarea.value = savedNotes;
+                        }
+                    });
+
+                    // إغلاق النافذة عند الضغط على (X)
+                    closeBtn.addEventListener('click', () => {
+                            notesModal.style.display = 'none';
+                    });
+
+                    // إغلاق النافذة عند الضغط في أي مكان خارج الصندوق
+                    window.addEventListener('click', (e) => {
+                            if (e.target === notesModal) {
+                                        notesModal.style.display = 'none';
+                            }
+                        });
+
+                        // حفظ الملاحظة في الـ LocalStorage
+                        saveNotesBtn.addEventListener('click', () => {
+                            localStorage.setItem('userNotes', notesTextarea.value);
+                                alert('تم حفظ الملاحظة بنجاح!');
+                                    notesModal.style.display = 'none';
+                        });
+
+   
+</script>
+<script>// =============================================
+    // 1. كود تحريك القائمة بالماوس في أي مكان
+    // =============================================
+    const draggableTodo = document.getElementById("draggable-todo");
+    const todoHeader = document.getElementById("todo-header");
+
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    todoHeader.addEventListener("mousedown", (e) => {
+            isDragging = true;
+                // حساب المسافة بين ضغطة الماوس وحافة الصندوق
+                    offsetX = e.clientX - draggableTodo.offsetLeft;
+                        offsetY = e.clientY - draggableTodo.offsetTop;
+                            todoHeader.style.cursor = "grabbing";
+    });
+
+    document.addEventListener("mousemove", (e) => {
+            if (!isDragging) return;
+                
+                // تحريك الصندوق بناءً على مكان الماوس الجديد
+                    draggableTodo.style.left = `${e.clientX - offsetX}px`;
+                        draggableTodo.style.top = `${e.clientY - offsetY}px`;
+    });
+
+    document.addEventListener("mouseup", () => {
+            isDragging = false;
+                todoHeader.style.cursor = "move";
+    });
+
+
+    // =============================================
+    // 2. كود إدارة التاسكات (To-Do List logic)
+    // =============================================
+    const todoInput = document.getElementById('todo-input');
+    const addTodoBtn = document.getElementById('add-todo-btn');
+    const todoList = document.getElementById('todo-list');
+
+    let tasks = JSON.parse(localStorage.getItem('studyTasks')) || [];
+
+    function renderTasks() {
+            todoList.innerHTML = '';
+                tasks.forEach((task, index) => {
+                            const li = document.createElement('li');
+                                    li.textContent = task.text;
+                                            
+                                            if (task.completed) li.classList.add('completed');
+                                                    
+                                                    li.addEventListener('click', () => toggleTask(index));
+                                                            
+                                                            const deleteBtn = document.createElement('button');
+                                                                    deleteBtn.innerHTML = '&times;';
+                                                                            deleteBtn.className = 'delete-btn';
+                                                                                    deleteBtn.addEventListener('click', (e) => {
+                                                                                                    e.stopPropagation();
+                                                                                                                deleteTask(index);
+                                                                                    });
+                                                                                            
+                                                                                            li.appendChild(deleteBtn);
+                                                                                                    todoList.appendChild(li);
+                                                                                                        });
+                                                                                                        }
+
+                                                                                                        function addTask() {
+                                                                                                                const taskText = todoInput.value.trim();
+                                                                                                                    if (taskText === '') return;
+                                                                                                                        
+                                                                                                                            tasks.push({ text: taskText, completed: false });
+                                                                                                                                todoInput.value = '';
+                                                                                                                                    saveToLocalStorage();
+                                                                                                                                        renderTasks();
+                                                                                                        }
+
+                                                                                                        function toggleTask(index) {
+                                                                                                                tasks[index].completed = !tasks[index].completed;
+                                                                                                                    saveToLocalStorage();
+                                                                                                                        renderTasks();
+                                                                                                                        }
+
+                                                                                                                        function deleteTask(index) {
+                                                                                                                                tasks.splice(index, 1);
+                                                                                                                                    saveToLocalStorage();
+                                                                                                                                        renderTasks();
+                                                                                                                        }
+
+                                                                                                                        function saveToLocalStorage() {
+                                                                                                                                localStorage.setItem('studyTasks', JSON.stringify(tasks));
+                                                                                                                                }
+
+                                                                                                                                addTodoBtn.addEventListener('click', addTask);
+                                                                                                                                todoInput.addEventListener('keypress', (e) => {
+                                                                                                                                        if (e.key === 'Enter') addTask();
+                                                                                                                                        });
+
+                                                                                                                                        renderTasks();
+
+   
+</script>
+</body>
+</html>
